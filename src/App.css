@@ -1,0 +1,51 @@
+@import "tailwindcss";
+/* Nền trống đồng */
+.bg-trong-dong {
+  background-color: #f1d753;
+  /* background-image: url('https://i.ibb.co/JtLk9Sr/trong-dong.png'); */
+  background-repeat: repeat;
+  background-size: contain;
+}
+
+/* Animation fade-in */
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  opacity: 0;
+  animation: fadeInUp 1s ease forwards;
+}
+
+/* Tạo độ trễ cho các card */
+.delay-1 {
+  animation-delay: 0.3s;
+}
+.delay-2 {
+  animation-delay: 0.6s;
+}
+.delay-3 {
+  animation-delay: 0.9s;
+}
+.delay-4 {
+  animation-delay: 1.2s;
+}
+.delay-5 {
+  animation-delay: 1.5s;
+}
+.delay-6 {
+  animation-delay: 1.8s;
+}
+.delay-7 {
+  animation-delay: 2.1s;
+}
+.delay-8 {
+  animation-delay: 2.4s;
+}

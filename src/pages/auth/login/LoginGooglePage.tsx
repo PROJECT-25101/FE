@@ -18,8 +18,10 @@ const LoginGooglePage = () => {
     queryFn: async () => {
       try {
         const { data } = await getProfile();
-        login(tk as string, data);
-        navigate("/", { replace: true });
+        if (data) {
+          login(tk as string, data);
+          navigate("/", { replace: true });
+        }
         return data;
       } catch (error) {
         void error;

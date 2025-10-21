@@ -1,5 +1,5 @@
-import FilterBooking from "./components/FilterBooking";
 import ScheduleCard from "../../components/common/ScheduleCard";
+import FilterBooking from "./components/FilterBooking";
 
 const BookingPage = () => {
   return (

@@ -49,3 +49,17 @@
 .delay-8 {
   animation-delay: 2.4s;
 }
+
+.custom-select .ant-select-selector {
+  border-radius: 5px !important;
+  border: 1px solid #e5e7eb !important;
+  background: #f3f4f6 !important;
+  box-shadow: none !important;
+}
+
+.custom-select .ant-select-selector:focus,
+.custom-select-focused .ant-select-selector {
+  border-color: #d1d5db !important;
+  box-shadow: none !important;
+  outline: none !important;
+}

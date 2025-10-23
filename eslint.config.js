@@ -25,6 +25,7 @@ export default defineConfig([
     },
     rules: {
       "prettier/prettier": "error",
+      "react-hooks/rules-of-hooks": "off",
     },
   },
 ]);

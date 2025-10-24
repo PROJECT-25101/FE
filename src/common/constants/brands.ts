@@ -1,0 +1,16 @@
+export const CAR_BRANDS = [
+  { label: "Thaco", value: "Thaco" },
+  { label: "Hyundai", value: "Hyundai" },
+  { label: "Samco", value: "Samco" },
+  { label: "Isuzu", value: "Isuzu" },
+  { label: "Toyota", value: "Toyota" },
+  { label: "Ford", value: "Ford" },
+  { label: "Kia", value: "Kia" },
+  { label: "Daewoo", value: "Daewoo" },
+  { label: "Mercedes-Benz", value: "Mercedes-Benz" },
+  { label: "Fuso", value: "Fuso" },
+  { label: "Hino", value: "Hino" },
+  { label: "Suzuki", value: "Suzuki" },
+  { label: "Mitsubishi", value: "Mitsubishi" },
+  { label: "VinFast", value: "VinFast" },
+];

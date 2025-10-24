@@ -1,7 +1,14 @@
 import type { IParams } from "../types";
-import type { ICar } from "../types/Car";
+import type { ICar, ICarPayload } from "../types/Car";
 import type { IResponse } from "../types/Response";
 import api from "../utils/api";
+
+export const createCar = async (
+  payload: ICarPayload,
+): Promise<IResponse<ICar>> => {
+  const { data } = await api.post("/car", payload);
+  return data;
+};
 
 export const getAllCar = async (
   params?: IParams,

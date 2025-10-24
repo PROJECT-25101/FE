@@ -16,3 +16,9 @@ export interface ICar {
   createdAt?: string;
   updatedAt?: string;
 }
+export interface ICarPayload extends Partial<Omit<ICar, "status">> {
+  floors: {
+    seatCount: number;
+    cols: number;
+  }[];
+}

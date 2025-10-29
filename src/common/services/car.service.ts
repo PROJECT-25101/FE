@@ -10,6 +10,14 @@ export const createCar = async (
   return data;
 };
 
+export const updateCar = async (
+  carId: string,
+  payload: Omit<ICarPayload, "floors">,
+) => {
+  const { data } = await api.patch(`/car/update/${carId}`, payload);
+  return data;
+};
+
 export const getAllCar = async (
   params?: IParams,
 ): Promise<IResponse<ICar[]>> => {

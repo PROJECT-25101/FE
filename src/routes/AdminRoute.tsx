@@ -1,7 +1,9 @@
 import type { RouteObject } from "react-router";
 import AdminLayout from "../components/layouts/AdminLayout";
 import ListCar from "../pages/admin/car/ListCar";
+import CreateCar from "../pages/admin/car/create/CreateCar";
 import DetailCar from "../pages/admin/car/detail/DetailCar";
+import UpdateCar from "../pages/admin/car/update/UpdateCar";
 
 export const AdminRoute: RouteObject[] = [
   {
@@ -19,6 +21,14 @@ export const AdminRoute: RouteObject[] = [
       {
         path: "car/:id",
         element: <DetailCar />,
+      },
+      {
+        path: "car/create",
+        element: <CreateCar />,
+      },
+      {
+        path: "car/update/:id",
+        element: <UpdateCar />,
       },
     ],
   },

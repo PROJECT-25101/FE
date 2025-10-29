@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
+  AppstoreOutlined,
   EditOutlined,
   EyeOutlined,
   LockOutlined,
@@ -7,12 +8,12 @@ import {
 } from "@ant-design/icons";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button, Popconfirm, Space, Tag, Tooltip } from "antd";
+import { Link } from "react-router";
 import { QUERY_KEY } from "../../../../common/constants/queryKey";
 import { useToast } from "../../../../common/hooks/useToast";
 import { updateStatusCar } from "../../../../common/services/car.service";
 import type { ICar, ICarModel } from "../../../../common/types/Car";
 import { TextCell } from "../../../../components/common/TextCell";
-import { Link } from "react-router";
 
 export const columnCar = (getSorterProps: (field: keyof ICar) => object) => {
   const queryClient = useQueryClient();
@@ -102,15 +103,16 @@ export const columnCar = (getSorterProps: (field: keyof ICar) => object) => {
               <EyeOutlined style={{ cursor: "pointer", fontSize: 18 }} />
             </Link>
           </Tooltip>
-
+          <Tooltip title="Chỉnh sửa ghế ngồi">
+            <Link to={`/admin/car/update/seat/${record._id}`}>
+              <AppstoreOutlined style={{ cursor: "pointer", fontSize: 18 }} />
+            </Link>
+          </Tooltip>
           <Space>
             <Tooltip title="Cập nhật">
-              <Button
-                type="text"
-                icon={<EditOutlined style={{ color: "blue" }} />}
-                disabled={!record.status}
-                size="small"
-              />
+              <Link className="mx-1" to={`/admin/car/update/${record._id}`}>
+                <EditOutlined style={{ color: "blue" }} />
+              </Link>
             </Tooltip>
 
             {record.status ? (

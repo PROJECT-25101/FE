@@ -17,6 +17,11 @@ export const getAllCar = async (
   return data;
 };
 
+export const getDetailCar = async (id: string): Promise<IResponse<ICar>> => {
+  const { data } = await api.get(`/car/detail/${id}`);
+  return data;
+};
+
 export const updateStatusCar = async (id: string): Promise<IResponse<ICar>> => {
   const { data } = await api.patch(`/car/status/${id}`);
   return data;

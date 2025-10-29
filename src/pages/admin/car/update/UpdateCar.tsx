@@ -173,7 +173,8 @@ const UpdateCar = () => {
           <div className="flex items-center gap-2 justify-end mt-6">
             <Button
               className="hover:border-red-500! hover:text-red-500!"
-              htmlType="reset"
+              htmlType="button"
+              onClick={() => form.setFieldsValue(carResponse.data?.data)}
               icon={<ReloadOutlined />}
             >
               Đặt lại

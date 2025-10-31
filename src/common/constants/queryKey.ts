@@ -8,4 +8,7 @@ export const QUERY_KEY = {
   SEAT: {
     ROOT: "SEAT",
   },
+  ROUTE: {
+    ROOT: "ROUTE",
+  },
 };

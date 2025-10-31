@@ -5,6 +5,7 @@ import CreateCar from "../pages/admin/car/create/CreateCar";
 import DetailCar from "../pages/admin/car/detail/DetailCar";
 import UpdateCar from "../pages/admin/car/update/UpdateCar";
 import UpdateSeatCar from "../pages/admin/car/update/seatCar/UpdateSeatCar";
+import ListRoute from "../pages/admin/route/ListRoute";
 
 export const AdminRoute: RouteObject[] = [
   {
@@ -17,23 +18,34 @@ export const AdminRoute: RouteObject[] = [
       },
       {
         path: "car",
-        element: <ListCar />,
+        children: [
+          { index: true, element: <ListCar /> },
+          {
+            path: ":id",
+            element: <DetailCar />,
+          },
+          {
+            path: "create",
+            element: <CreateCar />,
+          },
+          {
+            path: "update/:id",
+            element: <UpdateCar />,
+          },
+          {
+            path: "update/seat/:id",
+            element: <UpdateSeatCar />,
+          },
+        ],
       },
       {
-        path: "car/:id",
-        element: <DetailCar />,
-      },
-      {
-        path: "car/create",
-        element: <CreateCar />,
-      },
-      {
-        path: "car/update/:id",
-        element: <UpdateCar />,
-      },
-      {
-        path: "car/update/seat/:id",
-        element: <UpdateSeatCar />,
+        path: "route",
+        children: [
+          {
+            index: true,
+            element: <ListRoute />,
+          },
+        ],
       },
     ],
   },

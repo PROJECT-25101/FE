@@ -12,3 +12,10 @@ export const scrollToSection = (id: string) => {
 export const cn = (...inputs: ClassValue[]) => {
   return twMerge(clsx(inputs));
 };
+
+export const formatCurrency = (price: number | string): string => {
+  if (price == null || price === "") return "0 ₫";
+  const number = Number(price);
+  if (isNaN(number)) return "0 ₫";
+  return number.toLocaleString("vi-VN", { style: "currency", currency: "VND" });
+};

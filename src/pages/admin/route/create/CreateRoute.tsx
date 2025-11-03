@@ -29,23 +29,8 @@ const CreateRoute = () => {
     onError: (err) => handleAxiosError(err),
   });
   const handleSubmit = (values: Partial<IRoute>) => {
-    if (values) {
-      const payload = {
-        ...values,
-        pickupPoint: {
-          ...values.pickupPoint,
-          description: values.viaCities && values.viaCities[0]?.description,
-        },
-        dropPoint: {
-          ...values.dropPoint,
-          description:
-            values.viaCities &&
-            values.viaCities[values.viaCities.length - 1]?.description,
-        },
-      };
-      const cleanupPayload = deepCleanup(payload);
-      mutate(cleanupPayload as IRoute);
-    }
+    const cleanupPayload = deepCleanup(values);
+    mutate(cleanupPayload as IRoute);
   };
   const pickupPoint = Form.useWatch("pickupPoint", form);
   const dropPoint = Form.useWatch("dropPoint", form);
@@ -160,17 +145,17 @@ const CreateRoute = () => {
               },
             ]}
             getValueFromEvent={(e) => {
-              const val = e?.target?.value;
-              return val ? `${val} km` : "";
+              const val = e?.target?.value?.trim();
+              return val ? `${val}Km` : "";
             }}
             getValueProps={(v) => ({
-              value: typeof v === "string" ? v.replace("Km", "") : v || "",
+              value: typeof v === "string" ? v.replace(/\s?km$/i, "") : v || "",
             })}
           >
             <Input
               style={{ width: "100%", height: 40, borderRadius: 5 }}
               placeholder="Nhập khoảng cách"
-              suffix="KM"
+              suffix="km"
             />
           </Form.Item>
           <Form.Item
@@ -183,6 +168,8 @@ const CreateRoute = () => {
             <InputNumber
               className="w-full custom-input-number"
               placeholder="Nhập giá tiền"
+              min="1000"
+              max="20000000"
               addonAfter="VND"
               formatter={(value?: string) =>
                 value ? value.replace(/\B(?=(\d{3})+(?!\d))/g, ".") : ""

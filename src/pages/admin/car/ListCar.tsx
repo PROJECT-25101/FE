@@ -14,8 +14,7 @@ const ListCar = () => {
     useTable<ICar>();
   const { data: response, isLoading } = useQuery({
     queryKey: [QUERY_KEY.CAR.ROOT, ...Object.values(query)],
-    queryFn: () =>
-      getAllCar({ searchFields: ["name", "lisencePlate"], ...query }),
+    queryFn: () => getAllCar({ searchFields: ["licensePlate"], ...query }),
   });
   const { data = [], meta } = response || {};
   return (

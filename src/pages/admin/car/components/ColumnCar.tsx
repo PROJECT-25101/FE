@@ -42,14 +42,6 @@ export const columnCar = (getSorterProps: (field: keyof ICar) => object) => {
       render: (id: string) => <Tag className="uppercase">{id.slice(-8)}</Tag>,
     },
     {
-      title: <p style={{ whiteSpace: "nowrap", margin: 0 }}>Tên xe</p>,
-      dataIndex: "name",
-      key: "name",
-      width: 150,
-      render: (name: string) => <TextCell text={name} />,
-      ...getSorterProps("name"),
-    },
-    {
       title: <p style={{ whiteSpace: "nowrap", margin: 0 }}>Biển số xe</p>,
       dataIndex: "licensePlate",
       key: "lisencePlate",
@@ -68,6 +60,22 @@ export const columnCar = (getSorterProps: (field: keyof ICar) => object) => {
       render: (model: ICarModel) => (
         <TextCell text={model.brand || "Chưa cập nhật"} />
       ),
+    },
+    {
+      title: <p style={{ whiteSpace: "nowrap", margin: 0 }}>Tên kiểu xe</p>,
+      dataIndex: "model",
+      key: "model",
+      width: 150,
+      render: (model: ICarModel) => (
+        <TextCell text={model.model || "Chưa cập nhật"} />
+      ),
+    },
+    {
+      title: <p style={{ whiteSpace: "nowrap", margin: 0 }}>Loại xe</p>,
+      dataIndex: "type",
+      key: "type",
+      width: 150,
+      render: (type: string) => <TextCell text={type || "Chưa cập nhật"} />,
     },
     {
       title: <p style={{ whiteSpace: "nowrap", margin: 0 }}>Chỗ ngồi</p>,

@@ -90,7 +90,7 @@ const ModalAddFloor = ({
         <Form
           form={form}
           layout="vertical"
-          initialValues={{ seatCount: 16, cols: 3 }}
+          initialValues={{ seatCount: 18, cols: 3 }}
         >
           <div className="flex items-center gap-4 mt-8">
             <Form.Item

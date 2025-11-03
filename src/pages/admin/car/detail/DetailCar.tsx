@@ -37,7 +37,7 @@ const DetailCar = () => {
         <div>
           <div className="flex items-center justify-between">
             <h2 className="font-medium text-lg">
-              Thông tin chi tiết xe {carData?.name}
+              Thông tin chi tiết xe <Tag>{carData?._id}</Tag>
             </h2>
             <Link
               to={"/admin/car"}
@@ -51,9 +51,6 @@ const DetailCar = () => {
               Thông tin chung
             </Tag>
             <Descriptions bordered className="mt-4!">
-              <Descriptions.Item label="Tên xe" span={"filled"}>
-                {carData?.name}
-              </Descriptions.Item>
               <Descriptions.Item label="Biển số xe" span={"filled"}>
                 {carData?.licensePlate}
               </Descriptions.Item>
@@ -70,8 +67,8 @@ const DetailCar = () => {
               <Descriptions.Item label="Loại xe" span={"filled"}>
                 {carData?.model.model}
               </Descriptions.Item>
-              <Descriptions.Item span={"filled"} label="Dung tích động cơ">
-                {carData?.model.engine}
+              <Descriptions.Item span={"filled"} label="Kiểu xe">
+                {carData?.type}
               </Descriptions.Item>
             </Descriptions>
           </div>
@@ -86,7 +83,7 @@ const DetailCar = () => {
             )}
             {!isLoadingFloor && (
               <>
-                <div className="flex flex-wrap items-start justify-center gap-12 w-full">
+                <div className="flex flex-wrap items-start justify-center gap-44 w-full">
                   {floors?.data?.map((items, floorIndex) => {
                     return (
                       <div key={floorIndex}>
@@ -94,7 +91,7 @@ const DetailCar = () => {
                           Tầng {floorIndex + 1}
                         </p>
                         <div
-                          className="grid gap-x-12 gap-y-4"
+                          className="grid gap-x-4 gap-y-4"
                           style={{
                             gridTemplateColumns: `repeat(${items?.cols}, 1fr)`,
                             gridTemplateRows: `repeat(${items?.rows}, 1fr)`,

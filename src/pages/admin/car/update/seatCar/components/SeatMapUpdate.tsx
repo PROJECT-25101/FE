@@ -223,7 +223,7 @@ const SeatMapUpdate = ({ floorIndex, items, carId }: IProps) => {
       <div
         className="grid gap-x-4 gap-y-4"
         style={{
-          gridTemplateColumns: `repeat(${items.cols + 1 > 4 ? items.cols : items.cols + 1}, 1fr)`,
+          gridTemplateColumns: `repeat(5, 1fr)`,
           gridTemplateRows: `repeat(${items?.rows + 1}, 1fr)`,
         }}
       >
@@ -272,7 +272,7 @@ const SeatMapUpdate = ({ floorIndex, items, carId }: IProps) => {
           </div>
         ))}
         {Array.from({ length: items.rows }, (_, r) =>
-          Array.from({ length: items.cols }, (_, c) => {
+          Array.from({ length: items.cols < 5 ? 5 : items.cols }, (_, c) => {
             const row = r + 1;
             const col = c + 1;
             const occupied = items.seats.some(
@@ -300,7 +300,7 @@ const SeatMapUpdate = ({ floorIndex, items, carId }: IProps) => {
         )}
         {!isFull && (
           <>
-            {items.cols < 4 && (
+            {items.cols < 5 && (
               <>
                 {Array.from({ length: items.rows }, (_, r) => {
                   const row = r + 1;
@@ -324,29 +324,26 @@ const SeatMapUpdate = ({ floorIndex, items, carId }: IProps) => {
                 })}
               </>
             )}
-            {Array.from(
-              { length: items.cols + 1 > 4 ? items.cols : items.cols + 1 },
-              (_, c) => {
-                const col = c + 1;
-                return (
-                  <Button
-                    key={`add-row-${col}`}
-                    type="dashed"
-                    icon={<PlusOutlined />}
-                    size="small"
-                    className="rounded-full w-full! h-full! flex items-center justify-center text-xs bg-gray-50 hover:bg-gray-100"
-                    style={{
-                      gridColumnStart: col,
-                      gridRowStart: items.rows + 1,
-                    }}
-                    disabled={mutateCreateSeat.isPending}
-                    onClick={() =>
-                      handleAddSeat(col, items.rows + 1, items.floor)
-                    }
-                  />
-                );
-              },
-            )}
+            {Array.from({ length: 5 }, (_, c) => {
+              const col = c + 1;
+              return (
+                <Button
+                  key={`add-row-${col}`}
+                  type="dashed"
+                  icon={<PlusOutlined />}
+                  size="small"
+                  className="rounded-full w-full! h-full! flex items-center justify-center text-xs bg-gray-50 hover:bg-gray-100"
+                  style={{
+                    gridColumnStart: col,
+                    gridRowStart: items.rows + 1,
+                  }}
+                  disabled={mutateCreateSeat.isPending}
+                  onClick={() =>
+                    handleAddSeat(col, items.rows + 1, items.floor)
+                  }
+                />
+              );
+            })}
           </>
         )}
       </div>

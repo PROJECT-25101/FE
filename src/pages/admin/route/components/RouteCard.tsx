@@ -47,11 +47,13 @@ const RouteCard = ({ item }: { item: IRoute }) => {
         <Tag color={item.status ? "green" : "red"}>
           {item.status ? "Đang hoạt động" : "Ngừng hoạt động"}
         </Tag>
-        <p className="text-base font-semibold line-clamp-1" title={item.name}>
-          {item.name}
-        </p>
-        <p className="text-gray-600/80 text-xs">
-          Điểm đón: {item.pickupPoint.label} - Điểm trả: {item.dropPoint.label}
+        <p className="text-base font-semibold line-clamp-1">
+          {item.pickupPoint.label} - {item.dropPoint.label}{" "}
+          {item.description && (
+            <span className="text-gray-600/50 text-sm">
+              ({item.description})
+            </span>
+          )}
         </p>
         <p className="text-gray-600/80 text-xs">
           Đi qua: {item.viaCities.length} Thành phố

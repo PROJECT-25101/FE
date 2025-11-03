@@ -1,18 +1,12 @@
-import {
-  EditOutlined,
-  EnvironmentOutlined,
-  LockOutlined,
-  UnlockOutlined,
-} from "@ant-design/icons";
+import { EditOutlined, LockOutlined, UnlockOutlined } from "@ant-design/icons";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Badge, Button, Tag, Tooltip } from "antd";
+import { Badge, Button, Tag } from "antd";
 import { Link } from "react-router";
 import { QUERY_KEY } from "../../../../common/constants/queryKey";
 import { useToast } from "../../../../common/hooks/useToast";
 import { updateStatusRoute } from "../../../../common/services/route.service";
 import type { IRoute } from "../../../../common/types/Route";
 import { formatCurrency } from "../../../../common/utils";
-import ViaRouteModal from "./ViaRouteModal";
 
 const RouteCard = ({ item }: { item: IRoute }) => {
   const queryClient = useQueryClient();
@@ -55,9 +49,6 @@ const RouteCard = ({ item }: { item: IRoute }) => {
             </span>
           )}
         </p>
-        <p className="text-gray-600/80 text-xs">
-          Đi qua: {item.viaCities.length} Thành phố
-        </p>
         <p className="text-gray-600/80 text-xs">Khoảng cách: {item.distance}</p>
         <p className="text-gray-600/80 text-xs">
           Thời gian chạy dự kiến: {item.duration} Tiếng
@@ -67,11 +58,6 @@ const RouteCard = ({ item }: { item: IRoute }) => {
             Ngày tạo: {new Date(item.createdAt).toLocaleDateString("vi-VN")}
           </p>
           <div className="flex gap-2 mt-3 justify-end items-center">
-            <Tooltip title="Xem các thành phố đi qua">
-              <ViaRouteModal id={item._id}>
-                <Button icon={<EnvironmentOutlined />}></Button>
-              </ViaRouteModal>
-            </Tooltip>
             <Link to={"/route/update/:id"}>
               <Button size="middle" icon={<EditOutlined />}></Button>
             </Link>

@@ -1,6 +1,6 @@
 import { AppstoreAddOutlined } from "@ant-design/icons";
 import { useQuery } from "@tanstack/react-query";
-import { Pagination } from "antd";
+import { Pagination, Spin } from "antd";
 import { Link } from "react-router";
 import { QUERY_KEY } from "../../../common/constants/queryKey";
 import { useTable } from "../../../common/hooks/useTable";
@@ -20,29 +20,41 @@ const ListRoute = () => {
       <div className="flex justify-between mb-6">
         <FilterRoute />
         <Link
-          to={"/admin/car/create"}
+          to={"/admin/route/create"}
           style={{ background: "#0C7D41" }}
           className="hover:opacity-85! flex items-center px-4 py-1 gap-2 text-white! rounded-md"
         >
           <AppstoreAddOutlined /> Thêm tuyến đường
         </Link>
       </div>
-      {!isLoading && data?.data.length !== 0 && (
-        <div className="grid grid-cols-3 gap-8">
-          {data?.data.map((item, index) => (
-            <RouteCard item={item} key={index} />
-          ))}
+      {isLoading && (
+        <div className="min-h-[45vh] flex items-center justify-center">
+          <Spin size="large" />
         </div>
       )}
-      <div className="mt-4">
-        <Pagination
-          align="end"
-          onChange={onSelectPaginateChange}
-          current={data?.meta?.page}
-          pageSize={data?.meta?.limit}
-          total={data?.meta?.total}
-        />
-      </div>
+      {!isLoading && data?.data.length !== 0 && (
+        <>
+          <div className="grid grid-cols-3 gap-8">
+            {data?.data.map((item, index) => (
+              <RouteCard item={item} key={index} />
+            ))}
+          </div>
+          <div className="mt-4">
+            <Pagination
+              align="end"
+              onChange={onSelectPaginateChange}
+              current={data?.meta?.page}
+              pageSize={data?.meta?.limit}
+              total={data?.meta?.total}
+            />
+          </div>
+        </>
+      )}
+      {data?.data.length === 0 && (
+        <div className="min-h-[45vh] flex items-center justify-center">
+          <p className="text-base font-medium">Không có tuyến đường nào</p>
+        </div>
+      )}
     </div>
   );
 };

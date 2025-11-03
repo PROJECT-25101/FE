@@ -63,3 +63,13 @@
   box-shadow: none !important;
   outline: none !important;
 }
+
+.custom-input-number .ant-input-number-input {
+  height: 40px !important;
+  padding: 0 11px;
+}
+
+.custom-input-number {
+  height: 40px !important;
+  border-radius: 5px;
+}

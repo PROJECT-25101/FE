@@ -1,10 +1,17 @@
 import type { IParams } from "../types";
 import type { IResponse } from "../types/Response";
-import type { IProvince, IRoute } from "../types/Route";
+import type { IPoint, IProvince, IRoute } from "../types/Route";
 import api from "../utils/api";
 
 export const getAllProvince = async (): Promise<IResponse<IProvince[]>> => {
   const { data } = await api.get("/route/provinces");
+  return data;
+};
+
+export const getPointRoute = async (
+  params?: IParams,
+): Promise<IResponse<IPoint[]>> => {
+  const { data } = await api.get("/route/point-trip", { params });
   return data;
 };
 

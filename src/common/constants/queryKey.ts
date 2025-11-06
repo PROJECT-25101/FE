@@ -11,4 +11,8 @@ export const QUERY_KEY = {
   ROUTE: {
     ROOT: "ROUTE",
   },
+  POINT: {
+    PICK: "PICKUP_POINT",
+    DROP: "DROP_POINT",
+  },
 };

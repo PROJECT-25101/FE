@@ -10,6 +10,10 @@ export interface IPoint {
   description: string;
 }
 
+export interface IPointSelect extends Partial<IPoint> {
+  value: string;
+}
+
 export interface IRoute {
   _id: string;
   name: string;

@@ -7,6 +7,7 @@ import ForgetpassPage from "../pages/auth/forgetpass/ForgetpassPage";
 import RegisterPage from "../pages/auth/register/RegisterPage";
 import LoginGooglePage from "../pages/auth/login/LoginGooglePage";
 import BookingPage from "../pages/bookings/BookingPage";
+import VerifyUser from "../pages/auth/VerifyUser";
 
 export const PublicRoute: RouteObject[] = [
   {
@@ -44,5 +45,9 @@ export const PublicRoute: RouteObject[] = [
   {
     path: "/login-google/:tk",
     element: <LoginGooglePage />,
+  },
+  {
+    path: "verify",
+    element: <VerifyUser />,
   },
 ];

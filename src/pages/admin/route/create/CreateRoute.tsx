@@ -1,7 +1,7 @@
 import { ReloadOutlined } from "@ant-design/icons";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Button, Form, Input, InputNumber, Select, Tag } from "antd";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router";
 import { useToast } from "../../../../common/hooks/useToast";
 import {
@@ -11,6 +11,7 @@ import {
 import type { IRoute } from "../../../../common/types/Route";
 import { deepCleanup } from "../../../../common/utils";
 import { formRules } from "../../../../common/utils/formRules";
+import { FormDetailPickDrop } from "./components/FormDetailPickDrop";
 
 const CreateRoute = () => {
   const [form] = Form.useForm();
@@ -20,6 +21,7 @@ const CreateRoute = () => {
     queryKey: ["PROVINCE"],
     queryFn: () => getAllProvince(),
   });
+
   const { mutate, isPending } = useMutation({
     mutationFn: (payload: Partial<IRoute>) => createRoute(payload),
     onSuccess: ({ message }) => {
@@ -29,16 +31,29 @@ const CreateRoute = () => {
     onError: (err) => handleAxiosError(err),
   });
   const handleSubmit = (values: Partial<IRoute>) => {
+    const addresses: string[] = values.pickupPoint?.district?.description || [];
+    const hasEmpty = addresses.some((addr) => !addr || addr.trim() === "");
+    if (hasEmpty) {
+      antdMessage.error("Vui lòng điền đầy đủ địa chỉ");
+      return;
+    }
     const cleanupPayload = deepCleanup(values);
+    console.log(cleanupPayload);
     mutate(cleanupPayload as IRoute);
   };
   const pickupPoint = Form.useWatch("pickupPoint", form);
   const dropPoint = Form.useWatch("dropPoint", form);
+  const prevPickupIdRef = useRef(pickupPoint?._id);
+
   useEffect(() => {
-    if (pickupPoint && dropPoint && pickupPoint.label === dropPoint.label) {
-      form.setFieldValue("dropPoint", undefined);
+    const newId = pickupPoint?._id;
+    if (newId && newId !== prevPickupIdRef.current) {
+      form.setFieldValue("dropPoint", null);
+      form.setFieldValue("pickupPoint.district", null);
     }
-  }, [pickupPoint, dropPoint, form]);
+    prevPickupIdRef.current = newId;
+  }, [pickupPoint?._id, form]);
+
   return (
     <div className="bg-white w-full min-h-[70dvh] rounded-md shadow-sm px-6 py-4">
       <div className="flex items-center justify-between">
@@ -51,7 +66,7 @@ const CreateRoute = () => {
         <Tag color="green" className="text-sm! font-medium">
           Thông tin chung
         </Tag>
-        <div className="flex items-center gap-2 mt-2">
+        <div className="flex items-start gap-2 mt-2 mb-4">
           <div className="w-full">
             <Form.Item
               style={{ width: "100%" }}
@@ -71,12 +86,26 @@ const CreateRoute = () => {
                 loading={isLoading}
                 placeholder="Chọn điểm xuất phát"
                 labelInValue
+                filterOption={(input, option) =>
+                  (option?.label ?? "")
+                    .toLowerCase()
+                    .includes(input.toLowerCase())
+                }
                 options={data?.data.map((item) => ({
                   value: item._id,
                   label: item.label,
                 }))}
               />
             </Form.Item>
+            {pickupPoint?._id && (
+              <FormDetailPickDrop
+                form={form}
+                textButton="Thêm chi tiết điểm đón"
+                key="WARDS_PICKUP"
+                nameForm={["pickupPoint", "district"]}
+                point={pickupPoint}
+              />
+            )}
           </div>
           <div className="w-full">
             <Form.Item
@@ -103,8 +132,22 @@ const CreateRoute = () => {
                     value: item._id,
                     label: item.label,
                   }))}
+                filterOption={(input, option) =>
+                  (option?.label ?? "")
+                    .toLowerCase()
+                    .includes(input.toLowerCase())
+                }
               />
             </Form.Item>
+            {dropPoint?._id && (
+              <FormDetailPickDrop
+                form={form}
+                key="WARDS_DROP"
+                textButton="Thêm chi tiết điểm trả"
+                nameForm={["dropPoint", "district"]}
+                point={dropPoint}
+              />
+            )}
           </div>
         </div>
         <Form.Item
@@ -112,23 +155,30 @@ const CreateRoute = () => {
           name={"description"}
           label="Loại tuyến đường"
           required
-          rules={[
-            {
-              max: 50,
-              message: "Loại tuyến đường không được vượt quá 50 ký tự!",
-            },
-          ]}
+          rules={[formRules.required("Loại tuyến đường", true)]}
         >
-          <Input
-            style={{ height: 40, borderRadius: 5 }}
-            placeholder="Ví dụ: QL1A, Đường tỉnh 70, Cao tốc Bắc Giang – Lạng Sơn"
+          <Select
+            options={[
+              {
+                label: "Cao tốc",
+                value: "Cao tốc",
+              },
+              {
+                label: "Quốc lộ",
+                value: "Quốc lộ",
+              },
+            ]}
+            placeholder="Chọn loại tuyến đường"
+            style={{
+              height: 45,
+            }}
           />
         </Form.Item>
         <div className="flex items-center gap-2">
           <Form.Item
             style={{ flex: 1 }}
             name="distance"
-            label="Khoảng cách"
+            label="Khoảng cách dự kiến"
             required
             rules={[
               {
@@ -154,29 +204,8 @@ const CreateRoute = () => {
           >
             <Input
               style={{ width: "100%", height: 40, borderRadius: 5 }}
-              placeholder="Nhập khoảng cách"
+              placeholder="Nhập khoảng cách dự kiến"
               suffix="km"
-            />
-          </Form.Item>
-          <Form.Item
-            name="routePrice"
-            label="Giá tiền"
-            required
-            rules={[{ required: true, message: "Vui lòng nhập giá tiền!" }]}
-            style={{ flex: 1 }}
-          >
-            <InputNumber
-              className="w-full custom-input-number"
-              placeholder="Nhập giá tiền"
-              min="1000"
-              max="20000000"
-              addonAfter="VND"
-              formatter={(value?: string) =>
-                value ? value.replace(/\B(?=(\d{3})+(?!\d))/g, ".") : ""
-              }
-              parser={(value?: string) =>
-                value ? value.replace(/\./g, "") : ""
-              }
             />
           </Form.Item>
           <Form.Item

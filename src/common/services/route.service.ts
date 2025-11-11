@@ -8,6 +8,13 @@ export const getAllProvince = async (): Promise<IResponse<IProvince[]>> => {
   return data;
 };
 
+export const getWards = async (
+  provinceId: string,
+): Promise<IResponse<IProvince[]>> => {
+  const { data } = await api.get(`/route/wards/${provinceId}`);
+  return data;
+};
+
 export const getPointRoute = async (
   params?: IParams,
 ): Promise<IResponse<IPoint[]>> => {

@@ -62,3 +62,14 @@ export function deepCleanup<T extends Cleanable>(obj: T): T | undefined {
 
   return obj === "" ? undefined : obj;
 }
+
+export const filterOption = (
+  input: string,
+  option:
+    | {
+        value: string;
+        label: string;
+      }
+    | undefined,
+) =>
+  (option?.label ?? "").toString().toLowerCase().includes(input.toLowerCase());

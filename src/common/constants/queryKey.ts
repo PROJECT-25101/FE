@@ -15,4 +15,7 @@ export const QUERY_KEY = {
     PICK: "PICKUP_POINT",
     DROP: "DROP_POINT",
   },
+  SCHEDULE: {
+    ROOT: "SCHEDULE",
+  },
 };

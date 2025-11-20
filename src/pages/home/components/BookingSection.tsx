@@ -6,7 +6,8 @@ import { QUERY_KEY } from "../../../common/constants/queryKey";
 import { getPointRoute } from "../../../common/services/route.service";
 import type { IPointSelect } from "../../../common/types/Route";
 import { formRules } from "../../../common/utils/formRules";
-
+import utc from "dayjs/plugin/utc";
+dayjs.extend(utc);
 const BookingSection = () => {
   const [form] = Form.useForm();
   const pickupPoint = Form.useWatch("pickupPoint", form);
@@ -26,18 +27,27 @@ const BookingSection = () => {
     dropPoint: IPointSelect;
     time: string;
   }) => {
-    const selectedDate = dayjs(values.time);
-    const isToday = selectedDate.isSame(dayjs(), "day");
-    const startTimeFrom = isToday
-      ? dayjs().add(2, "hour").second(0).millisecond(0).toISOString()
-      : selectedDate.startOf("day").toISOString();
-    console.log(startTimeFrom);
-    const startTimeTo = selectedDate.endOf("day").toISOString();
+    const selectedLocal = dayjs(values.time);
+    const todayLocal = dayjs();
+    const isToday = selectedLocal.isSame(todayLocal, "day");
+    let startTimeFrom;
+    let startTimeTo;
+    if (isToday) {
+      startTimeFrom = todayLocal
+        .add(2, "hour")
+        .second(0)
+        .millisecond(0)
+        .toISOString();
+      startTimeTo = todayLocal.endOf("day").toISOString();
+    } else {
+      startTimeFrom = selectedLocal.startOf("day").toISOString();
+      startTimeTo = selectedLocal.endOf("day").toISOString();
+    }
     const params = {
       startTimeFrom,
       startTimeTo,
-      "pickupPoint._id": values.pickupPoint.value,
-      "dropPoint._id": values.dropPoint.value,
+      pickPointId: values.pickupPoint.value,
+      dropPointId: values.dropPoint.value,
     };
     window.scrollTo({
       top: 0,
@@ -73,6 +83,7 @@ const BookingSection = () => {
                   value: item._id,
                   label: item.label,
                 }))}
+                optionFilterProp="label"
                 placeholder="Chọn điểm đi"
               />
             </Form.Item>
@@ -83,10 +94,12 @@ const BookingSection = () => {
             >
               <Select
                 style={{ height: 50 }}
+                labelInValue
                 options={dataDrop?.data?.map((item) => ({
                   value: item._id,
                   label: item.label,
                 }))}
+                optionFilterProp="label"
                 placeholder="Chọn điểm đi"
                 disabled={!pickupPoint}
               />

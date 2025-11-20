@@ -73,3 +73,7 @@
   height: 40px !important;
   border-radius: 5px;
 }
+
+.custom-timepicker-popup .ant-picker-time-panel {
+  width: 250px;
+}

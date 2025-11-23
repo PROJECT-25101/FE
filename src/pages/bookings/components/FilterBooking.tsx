@@ -37,25 +37,23 @@ const FilterBooking = ({
     dropPoint: IPointSelect;
     time: string;
   }) => {
-    const selectedLocal = dayjs(values.time); // local time
-    const todayLocal = dayjs(); // local
-
+    const selectedLocal = dayjs(values.time);
+    const todayLocal = dayjs();
     const isToday = selectedLocal.isSame(todayLocal, "day");
-
     let startTimeFrom;
     let startTimeTo;
-
     if (isToday) {
-      startTimeFrom = todayLocal
-        .add(2, "hour")
-        .second(0)
-        .millisecond(0)
-        .toISOString();
+      const plus2h = todayLocal.add(2, "hour");
+      startTimeFrom = plus2h.isAfter(todayLocal.endOf("day"))
+        ? todayLocal.endOf("day").toISOString()
+        : plus2h.second(0).millisecond(0).toISOString();
+
       startTimeTo = todayLocal.endOf("day").toISOString();
     } else {
       startTimeFrom = selectedLocal.startOf("day").toISOString();
       startTimeTo = selectedLocal.endOf("day").toISOString();
     }
+
     const params = {
       startTimeFrom,
       startTimeTo,

@@ -33,11 +33,11 @@ const BookingSection = () => {
     let startTimeFrom;
     let startTimeTo;
     if (isToday) {
-      startTimeFrom = todayLocal
-        .add(2, "hour")
-        .second(0)
-        .millisecond(0)
-        .toISOString();
+      const plus2h = todayLocal.add(2, "hour");
+      startTimeFrom = plus2h.isAfter(todayLocal.endOf("day"))
+        ? todayLocal.endOf("day").toISOString()
+        : plus2h.second(0).millisecond(0).toISOString();
+
       startTimeTo = todayLocal.endOf("day").toISOString();
     } else {
       startTimeFrom = selectedLocal.startOf("day").toISOString();

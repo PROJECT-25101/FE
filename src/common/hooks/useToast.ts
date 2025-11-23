@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { App } from "antd";
+import { App, type ModalFuncProps } from "antd";
 import type { AxiosError } from "axios";
 
 type HandleAxiosErrorOptions = {
@@ -7,6 +7,11 @@ type HandleAxiosErrorOptions = {
   type?: "error" | "info" | "warning" | "success";
   fallback?: string;
   silent?: boolean;
+};
+export type CustomModalOptions = ModalFuncProps & {
+  type?: "confirm" | "error" | "info" | "success" | "warning";
+  field?: string;
+  fallback?: string;
 };
 /**
  * Hook giúp hiển thị thông báo (toast) thân thiện và xử lý lỗi từ Axios.
@@ -38,7 +43,7 @@ export const useToast = () => {
    * - `message.warning(content, duration?)`
    * - `message.open({ type, content, duration })`
    */
-  const { message } = App.useApp();
+  const { message, modal } = App.useApp();
   /**
    * Xử lý lỗi trả về từ Axios và hiển thị thông báo thân thiện cho người dùng.
    *
@@ -79,6 +84,34 @@ export const useToast = () => {
 
     return msg;
   };
+  const handleOpenModalError = (
+    error: unknown,
+    content: React.ReactNode | string = null,
+    options?: CustomModalOptions,
+  ) => {
+    const {
+      type = "error",
+      field = "message",
+      fallback = "Đã có lỗi xảy ra!",
+      ...otherOptions
+    } = options || {};
 
-  return { handleAxiosError, message };
+    const err = error as any;
+    const msg = err?.response?.data?.[field] || err?.message || fallback;
+
+    const modalInstance = (modal as any)[type]({
+      title: msg,
+      content: content || "Có lỗi không xác định!",
+      closable: true,
+      maskClosable: true,
+      ...otherOptions,
+    });
+
+    return {
+      instance: modalInstance,
+      closeModal: () => modalInstance.destroy?.(),
+    };
+  };
+
+  return { handleAxiosError, message, handleOpenModalError };
 };

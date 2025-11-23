@@ -17,7 +17,7 @@ const CardSchedule = ({ item }: { item: IScheduleCarIdRouteId }) => {
     <div
       className="bg-white shadow-lg border border-gray-300/50 w-full rounded-md py-4 px-6 grid"
       style={{
-        gridTemplateColumns: "200px 1fr 1fr 100px",
+        gridTemplateColumns: "200px 1fr 1fr 1fr 100px",
       }}
     >
       <div className="leading-6">
@@ -45,7 +45,19 @@ const CardSchedule = ({ item }: { item: IScheduleCarIdRouteId }) => {
         <p className="text-gray-700/60">Tổng lịch chạy:</p>
         <p className="font-medium text-sm">{item.count} Lịch chạy</p>
         <p className="text-xs">Đang hoạt động: {item.activeCount}</p>
-        <p className="text-xs">Ngừng hoạt động: {item.inActiveCount}</p>
+        <p className="text-xs">
+          Ngừng hoạt động / Bị huỷ: {item.inActiveCount}
+        </p>
+      </div>
+      <div>
+        <p className="text-gray-700/60">Trạng thái lịch chạy:</p>
+        <p className="text-xs">Lịch chưa chạy: {item.statusCount.pending}</p>
+        <p className="text-xs">
+          Lịch chạy hoàn thành: {item.statusCount.completed}
+        </p>
+        <p className="text-xs">
+          Lịch chạy bị huỷ: {item.statusCount.cancelled}
+        </p>
       </div>
       <div>
         <p className="text-gray-700/60">Thao tác:</p>

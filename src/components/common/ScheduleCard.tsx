@@ -7,9 +7,13 @@ import { Button } from "antd";
 import { useState } from "react";
 import ViaCitiesModal from "../../pages/bookings/components/ViaCitiesModal";
 import SeatPickSection from "./SeatPickSection";
+import dayjs from "dayjs";
+import type { ISchedule } from "../../common/types/Schedule";
+import { formatCurrency } from "../../common/utils";
 
-const ScheduleCard = () => {
+const ScheduleCard = ({ schedule }: { schedule: ISchedule }) => {
   const [isOpenSeatMap, setOpenSeatMap] = useState(false);
+  console.log(schedule);
   return (
     <div className="w-full">
       <div
@@ -19,12 +23,20 @@ const ScheduleCard = () => {
         <div className="flex gap-2 flex-col items-start">
           <p className="flex items-center gap-3 ">
             <ClockCircleFilled />
-            <span className="text-blue-400 font-medium">19:15 - 03:45</span>
+            <span className="text-blue-400 font-medium">
+              {dayjs(schedule?.startTime).format("HH:mm")} -{" "}
+              {dayjs(schedule?.arrivalTime).format("HH:mm")}
+            </span>
           </p>
-          <p className="text-gray-400">Thời gian: 8 giờ 30 phút</p>
+          <p className="text-gray-400">
+            Thời gian dự kiến: {schedule?.routeId?.duration} giờ
+          </p>
         </div>
         <div className="flex gap-2 flex-col items-start">
-          <p>Quảng Bình - BX Nước Ngầm</p>
+          <p className="font-semibold text-base">
+            {schedule?.routeId?.pickupPoint?.label} -{" "}
+            {schedule?.routeId?.dropPoint?.label}
+          </p>
           <ViaCitiesModal>
             <button className="text-sm text-blue-400 cursor-pointer hover:bg-blue-100 px-2 rounded-md duration-300">
               <EnvironmentOutlined /> Thành phố đi qua
@@ -32,17 +44,21 @@ const ScheduleCard = () => {
           </ViaCitiesModal>
         </div>
         <div className="flex gap-2 flex-col items-start">
-          <p className="flex items-center gap-2 text-xs">
+          <div className="flex items-center gap-2 text-xs">
             <CarOutlined />
             <span className="font-semibold text-orange-700 text-base">
-              5/32
+              5/{schedule.carId.maxSeatCapacity}
             </span>
-            <span className="font-medium">Chỗ còn chống</span>
-          </p>
-          <p className="text-gray-400">Xe giường nằm</p>
+            <p className="inline-block bg-white border border-black rounded px-2 py-[2px] text-xs font-bold tracking-wider shadow-[inset_0_0_3px_rgba(0,0,0,0.25)] uppercase font-mono">
+              {schedule.carId.licensePlate || "Chưa cập nhật"}
+            </p>
+          </div>
+          <p className="text-gray-400">{schedule.carId.type}</p>
         </div>
         <div className="flex items-center">
-          <p className="text-orange-700 text-lg font-semibold">320,000</p>
+          <p className="text-orange-700 text-lg font-semibold">
+            {formatCurrency(schedule.price as number)}
+          </p>
         </div>
         <div className="flex items-center">
           <Button

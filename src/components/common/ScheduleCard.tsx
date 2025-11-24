@@ -4,12 +4,12 @@ import {
   EnvironmentOutlined,
 } from "@ant-design/icons";
 import { Button } from "antd";
-import { useState } from "react";
-import ViaCitiesModal from "../../pages/bookings/components/ViaCitiesModal";
-import SeatPickSection from "./SeatPickSection";
 import dayjs from "dayjs";
+import { useState } from "react";
 import type { ISchedule } from "../../common/types/Schedule";
 import { formatCurrency } from "../../common/utils";
+import DetailPointModal from "../../pages/bookings/components/DetailPointModal";
+import SeatPickSection from "./SeatPickSection";
 
 const ScheduleCard = ({ schedule }: { schedule: ISchedule }) => {
   const [isOpenSeatMap, setOpenSeatMap] = useState(false);
@@ -37,11 +37,15 @@ const ScheduleCard = ({ schedule }: { schedule: ISchedule }) => {
             {schedule?.routeId?.pickupPoint?.label} -{" "}
             {schedule?.routeId?.dropPoint?.label}
           </p>
-          <ViaCitiesModal>
+          <DetailPointModal
+            dropPoint={schedule.routeId.dropPoint}
+            pickupPoint={schedule.routeId.pickupPoint}
+            name={`${schedule.routeId.pickupPoint.label} - ${schedule.routeId.dropPoint.label}`}
+          >
             <button className="text-sm text-blue-400 cursor-pointer hover:bg-blue-100 px-2 rounded-md duration-300">
-              <EnvironmentOutlined /> Thành phố đi qua
+              <EnvironmentOutlined /> Các điểm đón trả khách
             </button>
-          </ViaCitiesModal>
+          </DetailPointModal>
         </div>
         <div className="flex gap-2 flex-col items-start">
           <div className="flex items-center gap-2 text-xs">

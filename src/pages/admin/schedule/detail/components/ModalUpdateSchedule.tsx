@@ -194,7 +194,7 @@ const ModalUpdateSchedule = ({
                 value: key,
                 label,
               }))}
-              disabled={status === "cancelled"}
+              disabled={schedule.status === "cancelled"}
             />
           </Form.Item>
           {status === "cancelled" && (
@@ -204,7 +204,7 @@ const ModalUpdateSchedule = ({
               name={"cancelDescription"}
             >
               <TextArea
-                disabled={status === "cancelled"}
+                disabled={schedule.status === "cancelled"}
                 placeholder="Nhập lý do huỷ lịch chạy"
                 rows={5}
               />

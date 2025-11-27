@@ -5,6 +5,7 @@ import { useAuthStore } from "../../../common/store";
 import { useQuery } from "@tanstack/react-query";
 import { QUERY_KEY } from "../../../common/constants/queryKey";
 import { getProfile } from "../../../common/services/user.service";
+import { initSocket } from "../../../socket/socket-client";
 
 const LoginGooglePage = () => {
   const { tk } = useParams();
@@ -20,6 +21,7 @@ const LoginGooglePage = () => {
         const { data } = await getProfile();
         if (data) {
           login(tk as string, data);
+          initSocket(tk as string);
           navigate("/", { replace: true });
         }
         return data;

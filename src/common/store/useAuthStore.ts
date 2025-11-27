@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
 import { useShallow } from "zustand/shallow";
 import type { IUser } from "../types/User";
+import { getSocket } from "../../socket/socket-client";
 
 interface AuthState {
   user: IUser | null;
@@ -19,7 +20,11 @@ export const useAuthStore = create<AuthState>()(
         token: null,
         isLogged: false,
         login: (token, user) => set({ user, token, isLogged: true }),
-        logout: () => set({ user: null, token: null, isLogged: false }),
+        logout: () => {
+          set({ user: null, token: null, isLogged: false });
+          const socket = getSocket();
+          socket.disconnect();
+        },
       }),
       { name: "auth-storage" },
     ),

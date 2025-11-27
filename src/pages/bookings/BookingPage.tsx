@@ -21,7 +21,7 @@ const BookingPage = () => {
       }),
   });
   const { data, isLoading } = useQuery({
-    queryKey: [QUERY_KEY.SCHEDULE, "CLIENT", ...Object.values(query)],
+    queryKey: [QUERY_KEY.SCHEDULE.ROOT, "CLIENT", ...Object.values(query)],
     queryFn: () => {
       const routeIds = routeData?.data.map((item) => item._id);
       console.log(routeIds);

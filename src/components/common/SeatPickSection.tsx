@@ -1,4 +1,4 @@
-import { Button, Form, Input, Select, Tooltip } from "antd";
+import { Button, Form, Input, Select, Spin, Tooltip } from "antd";
 import SeatMap from "./SeatMap";
 import {
   MailOutlined,
@@ -7,27 +7,50 @@ import {
   UserOutlined,
 } from "@ant-design/icons";
 import { useBookingSelector } from "../../common/store/useBookingStore";
+import { useQuery } from "@tanstack/react-query";
+import { QUERY_KEY } from "../../common/constants/queryKey";
+import { getSeatMapSchedule } from "../../common/services/seat.schedule.service";
 
 const seatStatuses = [
   { label: "Trống", color: "bg-blue-300", desc: "Ghế trống, có thể chọn" },
   { label: "Đã đặt", color: "bg-pink-100", desc: "Ghế đã được đặt" },
   { label: "Của bạn", color: "bg-[#FFFCD1]", desc: "Ghế bạn đã chọn" },
   { label: "Giữ", color: "bg-gray-300", desc: "Ghế đang giữ" },
-  { label: "Không khả dụng", color: "bg-red-300", desc: "Ghế không thể chọn" },
+  { label: "Không khả dụng", color: "#fca5a5", desc: "Ghế không thể chọn" },
 ];
 
-const SeatPickSection = () => {
+const SeatPickSection = ({
+  carId,
+  scheduleId,
+}: {
+  carId: string;
+  scheduleId: string;
+}) => {
   const seats = useBookingSelector((state) => state.seats);
   const onSubmit = (values: unknown) => {
     console.log(values);
   };
+  const { data, isLoading } = useQuery({
+    queryKey: [QUERY_KEY.SEAT.ROOT, carId, scheduleId],
+    queryFn: async () => getSeatMapSchedule(carId, scheduleId),
+  });
   return (
     <div className="mt-2 bg-white w-full p-4 rounded-lg shadow-md flex gap-6">
       <div className="w-[70%] bg-gray-100 py-6 rounded-lg px-6">
-        <div className=" flex flex-col gap-4 items-center">
-          <p className="text-center font-semibold">Tầng 1</p>
-          <SeatMap totalSeats={16} cols={3} />
-        </div>
+        {isLoading ? (
+          <div className="flex justify-center items-center min-h-[30vh]">
+            <Spin />
+          </div>
+        ) : (
+          <div className="flex items-start gap-16 justify-center">
+            {data?.data.map((item, index) => (
+              <div key={index} className=" flex flex-col gap-4 items-center">
+                <p className="text-center font-semibold">Tầng 1</p>
+                <SeatMap floor={item} scheduleId={scheduleId} />
+              </div>
+            ))}
+          </div>
+        )}
         <div className="flex items-center justify-end text-xs mt-8 gap-6">
           {seatStatuses.map((status) => (
             <div className="flex items-center gap-2 cursor-pointer">

@@ -1,18 +1,19 @@
 import { useQuery } from "@tanstack/react-query";
 import { Button, DatePicker, Form, Select } from "antd";
 import dayjs from "dayjs";
-import { createSearchParams, useNavigate } from "react-router";
+import utc from "dayjs/plugin/utc";
+import { createSearchParams } from "react-router";
 import { QUERY_KEY } from "../../../common/constants/queryKey";
+import { useAuthNavigate } from "../../../common/hooks/useAuthNavigate";
 import { getPointRoute } from "../../../common/services/route.service";
 import type { IPointSelect } from "../../../common/types/Route";
 import { formRules } from "../../../common/utils/formRules";
-import utc from "dayjs/plugin/utc";
 dayjs.extend(utc);
 const BookingSection = () => {
   const [form] = Form.useForm();
   const pickupPoint = Form.useWatch("pickupPoint", form);
   const dropPoint = Form.useWatch("dropPoint", form);
-  const nav = useNavigate();
+  const nav = useAuthNavigate();
   const { data: dataPick } = useQuery({
     queryKey: [QUERY_KEY.POINT.PICK],
     queryFn: () => getPointRoute(),
@@ -64,11 +65,12 @@ const BookingSection = () => {
         Đặt vé xe ngay
       </h2>
       <div className="max-w-7xl mx-6 xl:mx-auto py-8">
-        <Form onFinish={handleSubmit} form={form}>
-          <div className="flex gap-6">
+        <Form onFinish={handleSubmit} layout="vertical" form={form}>
+          <div className="flex gap-6 items-end">
             <Form.Item
               style={{ flex: 1 }}
               name={"pickupPoint"}
+              label="Điểm xuất phát"
               rules={[formRules.required("Điểm đi", true)]}
             >
               <Select
@@ -90,6 +92,7 @@ const BookingSection = () => {
             <Form.Item
               style={{ flex: 1 }}
               name={"dropPoint"}
+              label="Điểm đến"
               rules={[formRules.required("Điểm đến", true)]}
             >
               <Select
@@ -107,6 +110,7 @@ const BookingSection = () => {
             <Form.Item
               style={{ flex: 1 }}
               name={"time"}
+              label="Ngày di chuyển"
               rules={[formRules.required("Ngày di chuyển", true)]}
             >
               <DatePicker

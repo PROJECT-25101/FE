@@ -51,6 +51,10 @@ export default function SeatMap({
             key={item._id}
             style={{
               background: getStatusColorSeat(item, userId as string),
+              border:
+                item.userId === userId
+                  ? "2px solid black"
+                  : "2px solid transparent",
             }}
             className={`w-14 h-8 font-semibold  text-xs  rounded-full flex duration-300 items-center justify-center cursor-pointer hover:opacity-70 transition-opacity`}
           >

@@ -8,6 +8,7 @@ import RegisterPage from "../pages/auth/register/RegisterPage";
 import LoginGooglePage from "../pages/auth/login/LoginGooglePage";
 import BookingPage from "../pages/bookings/BookingPage";
 import VerifyUser from "../pages/auth/VerifyUser";
+import CheckoutPage from "../pages/checkout/CheckoutPage";
 
 export const PublicRoute: RouteObject[] = [
   {
@@ -21,6 +22,10 @@ export const PublicRoute: RouteObject[] = [
       {
         path: "bookings",
         element: <BookingPage />,
+      },
+      {
+        path: "/checkout/:id",
+        element: <CheckoutPage />,
       },
     ],
   },

@@ -45,7 +45,7 @@ const SeatPickSection = ({
           <div className="flex items-start gap-16 justify-center">
             {data?.data.map((item, index) => (
               <div key={index} className=" flex flex-col gap-4 items-center">
-                <p className="text-center font-semibold">Tầng 1</p>
+                <p className="text-center font-semibold">Tầng {item.floor}</p>
                 <SeatMap floor={item} scheduleId={scheduleId} />
               </div>
             ))}

@@ -1,8 +1,25 @@
 import { GiftFilled } from "@ant-design/icons";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button, Checkbox, Radio } from "antd";
+import { useNavigate } from "react-router";
+import { QUERY_KEY } from "../../common/constants/queryKey";
+import { useUnHoldOnBack } from "../../common/hooks/useUnHoldOnBack";
+import { unHoldSeat } from "../../common/services/seat.schedule.service";
 import CountTime from "./components/CountTime";
 
 const CheckoutPage = () => {
+  useUnHoldOnBack();
+  const queryClient = useQueryClient();
+  const nav = useNavigate();
+  const { mutate } = useMutation({
+    mutationFn: unHoldSeat,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        predicate: ({ queryKey }) => queryKey.includes(QUERY_KEY.SEAT),
+      });
+    },
+  });
+
   return (
     <section className="bg-[#f0f2f5] min-h-screen">
       <div className="max-w-7xl xl:mx-auto mx-6 pt-8">
@@ -101,7 +118,14 @@ const CheckoutPage = () => {
             <div className="mt-4 flex items-center justify-between">
               <Checkbox>Tôi đồng ý với quy định của Go Ticket</Checkbox>
               <div className="flex items-center gap-4">
-                <Button>Huỷ</Button>
+                <Button
+                  onClick={() => {
+                    mutate();
+                    nav(-1);
+                  }}
+                >
+                  Huỷ
+                </Button>
                 <Button type="primary" style={{ background: `#0C7D41` }}>
                   Thanh toán
                 </Button>

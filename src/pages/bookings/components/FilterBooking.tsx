@@ -29,8 +29,13 @@ const FilterBooking = ({
   });
   const { data: dataDrop } = useQuery({
     queryKey: [QUERY_KEY.POINT.DROP, pickupPoint],
-    queryFn: () => getPointRoute({ pickupPointId: pickupPoint.value }),
-    enabled: !!pickupPoint,
+    queryFn: () =>
+      getPointRoute({
+        pickupPointId: pickupPoint.value
+          ? pickupPoint.value
+          : initialValues.pickupPointId,
+      }),
+    enabled: !!initialValues.pickupPointId,
   });
   const handleSubmit = (values: {
     pickupPoint: IPointSelect;

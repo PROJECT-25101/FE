@@ -12,6 +12,7 @@ import { getSeatMapSchedule } from "../../common/services/seat.schedule.service"
 import SeatMap from "./SeatMap";
 import { useAuthSelector } from "../../common/store";
 import { formatCurrency } from "../../common/utils";
+import type { ISchedule } from "../../common/types/Schedule";
 
 const seatStatuses = [
   { label: "Trống", color: "bg-blue-300", desc: "Ghế trống, có thể chọn" },
@@ -23,17 +24,17 @@ const seatStatuses = [
 
 const SeatPickSection = ({
   carId,
-  scheduleId,
+  schedule,
 }: {
   carId: string;
-  scheduleId: string;
+  schedule: ISchedule;
 }) => {
   const userId = useAuthSelector((state) => state.user?._id);
   const nav = useNavigate();
 
   const { data, isLoading } = useQuery({
-    queryKey: [QUERY_KEY.SEAT.ROOT, carId, scheduleId],
-    queryFn: async () => getSeatMapSchedule(carId, scheduleId),
+    queryKey: [QUERY_KEY.SEAT.ROOT, carId, schedule._id],
+    queryFn: async () => getSeatMapSchedule(carId, schedule._id),
   });
   const hasHeldSeat = data?.data.some((item) =>
     item.seats.some(
@@ -43,7 +44,7 @@ const SeatPickSection = ({
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const onSubmit = (values: any) => {
     if (!hasHeldSeat) return;
-    nav(`/checkout/${scheduleId}`);
+    nav(`/checkout/${schedule._id}`);
     console.log(values);
   };
   const allSeats = data?.data.flatMap((item) => item.seats) || [];
@@ -62,7 +63,7 @@ const SeatPickSection = ({
             {data?.data.map((item, index) => (
               <div key={index} className=" flex flex-col gap-4 items-center">
                 <p className="text-center font-semibold">Tầng {item.floor}</p>
-                <SeatMap floor={item} scheduleId={scheduleId} />
+                <SeatMap floor={item} scheduleId={schedule._id} />
               </div>
             ))}
           </div>
@@ -172,19 +173,27 @@ const SeatPickSection = ({
           >
             <Select
               showSearch
-              style={{
-                height: 45,
-              }}
+              style={{ height: 45 }}
               prefix={<SendOutlined className="mr-2 -rotate-45" />}
               className="custom-select w-full"
-              placeholder="Điểm xuất phát"
-              optionFilterProp="label"
-              options={[
-                { value: "Hà Nội", label: "Hà Nội" },
-                { value: "Hà Tĩnh", label: "Hà Tĩnh" },
-                { value: "Nghệ An", label: "Nghệ An" },
-              ]}
-            />
+              placeholder="Điểm đón"
+              optionFilterProp="children"
+            >
+              {schedule.routeId.pickupPoint.district.map((item) => (
+                <Select.OptGroup
+                  label={`${item.label} - ${schedule.routeId.pickupPoint.label}`}
+                >
+                  {item.description.map((description) => (
+                    <Select.Option
+                      key={item._id}
+                      value={`${item.label} - ${description}`}
+                    >
+                      {description}
+                    </Select.Option>
+                  ))}
+                </Select.OptGroup>
+              ))}
+            </Select>
           </Form.Item>
           <Form.Item
             name={"dropPoint"}
@@ -192,19 +201,27 @@ const SeatPickSection = ({
           >
             <Select
               showSearch
-              style={{
-                height: 45,
-              }}
+              style={{ height: 45 }}
               prefix={<SendOutlined className="mr-2 -rotate-45" />}
               className="custom-select w-full"
               placeholder="Điểm đến"
-              optionFilterProp="label"
-              options={[
-                { value: "Hà Nội", label: "Hà Nội" },
-                { value: "Hà Tĩnh", label: "Hà Tĩnh" },
-                { value: "Nghệ An", label: "Nghệ An" },
-              ]}
-            />
+              optionFilterProp="children"
+            >
+              {schedule.routeId.dropPoint.district.map((item) => (
+                <Select.OptGroup
+                  label={`${item.label} - ${schedule.routeId.dropPoint.label}`}
+                >
+                  {item.description.map((description) => (
+                    <Select.Option
+                      key={item._id}
+                      value={`${item.label} - ${description}`}
+                    >
+                      {description}
+                    </Select.Option>
+                  ))}
+                </Select.OptGroup>
+              ))}
+            </Select>
           </Form.Item>
           <Form.Item>
             <Button

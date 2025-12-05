@@ -27,6 +27,7 @@ export interface ISchedule {
   disableBy: "service" | "handle";
   createdAt: string;
   updatedAt: string;
+  bookedCount?: number;
 }
 
 export interface IScheduleCarIdRouteId extends Omit<ISchedule, "dayOfWeek"> {

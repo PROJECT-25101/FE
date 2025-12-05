@@ -100,7 +100,7 @@ const ScheduleCard = ({
           <div className="flex items-center gap-2 text-xs">
             <CarOutlined />
             <span className="font-semibold text-orange-700 text-base">
-              5/{schedule.carId.maxSeatCapacity}
+              {schedule.bookedCount || 0}/{schedule.carId.maxSeatCapacity}
             </span>
             <p className="inline-block bg-white border border-black rounded px-2 py-[2px] text-xs font-bold tracking-wider shadow-[inset_0_0_3px_rgba(0,0,0,0.25)] uppercase font-mono">
               {schedule.carId.licensePlate || "Chưa cập nhật"}
@@ -132,7 +132,7 @@ const ScheduleCard = ({
         </div>
       </div>
       {isOpenSeatMap && (
-        <SeatPickSection carId={schedule.carId._id} scheduleId={schedule._id} />
+        <SeatPickSection carId={schedule.carId._id} schedule={schedule} />
       )}
     </div>
   );

@@ -4,11 +4,14 @@ import {
   SendOutlined,
   UserOutlined,
 } from "@ant-design/icons";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { Button, Form, Input, Select, Spin, Tooltip } from "antd";
 import { useNavigate } from "react-router";
 import { QUERY_KEY } from "../../common/constants/queryKey";
-import { getSeatMapSchedule } from "../../common/services/seat.schedule.service";
+import {
+  extendHoldSeat,
+  getSeatMapSchedule,
+} from "../../common/services/seat.schedule.service";
 import SeatMap from "./SeatMap";
 import { useAuthSelector } from "../../common/store";
 import { formatCurrency } from "../../common/utils";
@@ -49,8 +52,12 @@ const SeatPickSection = ({
   const holdSeat = allSeats.filter(
     (seat) => seat.bookingStatus === "hold" && seat.userId === userId,
   );
+  const extendHoldMutation = useMutation({
+    mutationFn: (seatIds: string[]) =>
+      extendHoldSeat(schedule._id as string, seatIds),
+  });
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const onSubmit = (values: any) => {
+  const onSubmit = async (values: any) => {
     if (!hasHeldSeat) return;
     const payload = {
       seat: holdSeat,
@@ -67,6 +74,7 @@ const SeatPickSection = ({
       dropPoint: values.dropPoint,
     };
     setInfomationCheckout(payload);
+    await extendHoldMutation.mutateAsync(holdSeat.map((item) => item._id));
     nav(`/checkout/${schedule._id}`);
   };
 
@@ -246,7 +254,8 @@ const SeatPickSection = ({
             <Button
               htmlType="submit"
               type="primary"
-              disabled={!hasHeldSeat}
+              disabled={!hasHeldSeat || extendHoldMutation.isPending}
+              loading={extendHoldMutation.isPending}
               style={{
                 background: "#0c7d41",
                 width: "100%",

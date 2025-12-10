@@ -1,5 +1,6 @@
 // src/socket/socket-client.ts
 import { io, Socket } from "socket.io-client";
+import { useAuthSelector } from "../common/store";
 
 let socket: Socket | null = null;
 
@@ -22,6 +23,10 @@ export const initSocket = (token: string): Socket => {
 };
 
 export const getSocket = (): Socket => {
-  if (!socket) throw new Error("Socket not initialized");
-  return socket;
+  const token = useAuthSelector((state) => state.token);
+  if (token) {
+    const socket = initSocket(token);
+    return socket;
+  }
+  return {} as Socket;
 };

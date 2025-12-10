@@ -14,6 +14,7 @@ import { formatCurrency } from "../../common/utils";
 import DetailPointModal from "../../pages/bookings/components/DetailPointModal";
 import { getSocket } from "../../socket/socket-client";
 import SeatPickSection from "./SeatPickSection";
+import { useCheckoutSelector } from "../../common/store/useCheckoutStore";
 
 const ScheduleCard = ({
   schedule,
@@ -24,6 +25,9 @@ const ScheduleCard = ({
   openScheduleId: string | null;
   setOpenScheduleId: (id: string | null) => void;
 }) => {
+  const resetInfomationCheckout = useCheckoutSelector(
+    (state) => state.resetInformation,
+  );
   const isOpenSeatMap = openScheduleId === schedule._id;
   const socket = getSocket();
   const queryClient = useQueryClient();
@@ -45,11 +49,13 @@ const ScheduleCard = ({
 
   const handleOpenSchedule = (scheduleId: string) => {
     if (isOpenSeatMap) {
+      resetInfomationCheckout();
       mutate();
       socket.emit("leaveSchedule", scheduleId);
       setOpenScheduleId(null);
       return;
     }
+    resetInfomationCheckout();
     mutate();
     socket.emit("joinSchedule", scheduleId);
     setOpenScheduleId(scheduleId);

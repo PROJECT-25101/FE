@@ -13,6 +13,7 @@ import SeatMap from "./SeatMap";
 import { useAuthSelector } from "../../common/store";
 import { formatCurrency } from "../../common/utils";
 import type { ISchedule } from "../../common/types/Schedule";
+import { useCheckoutSelector } from "../../common/store/useCheckoutStore";
 
 const seatStatuses = [
   { label: "Trống", color: "bg-blue-300", desc: "Ghế trống, có thể chọn" },
@@ -29,6 +30,9 @@ const SeatPickSection = ({
   carId: string;
   schedule: ISchedule;
 }) => {
+  const setInfomationCheckout = useCheckoutSelector(
+    (state) => state.setInformation,
+  );
   const userId = useAuthSelector((state) => state.user?._id);
   const nav = useNavigate();
 
@@ -41,16 +45,31 @@ const SeatPickSection = ({
       (seat) => seat.userId === userId && seat.bookingStatus === "hold",
     ),
   );
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const onSubmit = (values: any) => {
-    if (!hasHeldSeat) return;
-    nav(`/checkout/${schedule._id}`);
-    console.log(values);
-  };
   const allSeats = data?.data.flatMap((item) => item.seats) || [];
   const holdSeat = allSeats.filter(
     (seat) => seat.bookingStatus === "hold" && seat.userId === userId,
   );
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const onSubmit = (values: any) => {
+    if (!hasHeldSeat) return;
+    const payload = {
+      seat: holdSeat,
+      totalPrice: holdSeat.reduce((acc, seat) => acc + seat.price, 0),
+      schedule: schedule,
+      car: schedule.carId,
+      route: schedule.routeId,
+      user: {
+        userName: values.userName,
+        email: values.email,
+        phone: values.phone,
+      },
+      pickupPoint: values.pickUpPoint,
+      dropPoint: values.dropPoint,
+    };
+    setInfomationCheckout(payload);
+    nav(`/checkout/${schedule._id}`);
+  };
+
   return (
     <div className="mt-2 bg-white w-full p-4 rounded-lg shadow-md flex gap-6">
       <div className="w-[70%] bg-gray-100 py-6 rounded-lg px-6">
@@ -186,7 +205,7 @@ const SeatPickSection = ({
                   {item.description.map((description) => (
                     <Select.Option
                       key={item._id}
-                      value={`${item.label} - ${description}`}
+                      value={`${description} - ${item.label} - ${schedule.routeId.pickupPoint.label}`}
                     >
                       {description}
                     </Select.Option>
@@ -214,7 +233,7 @@ const SeatPickSection = ({
                   {item.description.map((description) => (
                     <Select.Option
                       key={item._id}
-                      value={`${item.label} - ${description}`}
+                      value={`${description} - ${item.label} - ${schedule.routeId.dropPoint.label}`}
                     >
                       {description}
                     </Select.Option>

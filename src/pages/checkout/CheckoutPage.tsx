@@ -6,6 +6,9 @@ import { QUERY_KEY } from "../../common/constants/queryKey";
 import { useUnHoldOnBack } from "../../common/hooks/useUnHoldOnBack";
 import { unHoldSeat } from "../../common/services/seat.schedule.service";
 import CountTime from "./components/CountTime";
+import { useCheckoutSelector } from "../../common/store/useCheckoutStore";
+import dayjs from "dayjs";
+import { formatCurrency } from "../../common/utils";
 
 const CheckoutPage = () => {
   useUnHoldOnBack();
@@ -19,6 +22,7 @@ const CheckoutPage = () => {
       });
     },
   });
+  const checkoutInfo = useCheckoutSelector((state) => state);
 
   return (
     <section className="bg-[#f0f2f5] min-h-screen">
@@ -40,15 +44,15 @@ const CheckoutPage = () => {
               <div className="mt-6 flex flex-col gap-5 text-gray-800/60">
                 <div className="flex items-center">
                   <p className="w-42">Số điện thoại</p>
-                  <p>0383144530</p>
+                  <p>{checkoutInfo.user?.phone}</p>
                 </div>
                 <div className="flex items-center">
                   <p className="w-42">Họ tên</p>
-                  <p>Lương Chính Quốc</p>
+                  <p>{checkoutInfo.user?.userName}</p>
                 </div>
                 <div className="flex items-center">
                   <p className="w-42">Email</p>
-                  <p>quoclcph18659@gmail.com</p>
+                  <p>{checkoutInfo.user?.email}</p>
                 </div>
               </div>
             </div>
@@ -81,36 +85,43 @@ const CheckoutPage = () => {
                 <div className="flex items-center">
                   <p className="w-42">Tuyến</p>
                   <p className="text-gray-800">
-                    BX Nước Ngầm - TX Cửa Lò (Cao tốc Hà Nội - Nghệ An)
+                    {checkoutInfo.schedule?.routeId.pickupPoint.label} -{" "}
+                    {checkoutInfo.schedule?.routeId.dropPoint.label}
                   </p>
                 </div>
                 <div className="flex items-center">
                   <p className="w-42">Giờ xuất bến</p>
-                  <p className="text-gray-800">08:00 ngày 29/11/2025</p>
-                </div>
-                <div className="flex items-center">
-                  <p className="w-42">Điểm đón</p>
-                  <p className="text-gray-800">172 Trần Bình</p>
-                </div>
-                <div className="flex items-center">
-                  <p className="w-42">Điểm đến</p>
                   <p className="text-gray-800">
-                    ĐL NGHI SƠN (NH TƯỜNG VY) - TH
+                    {dayjs(checkoutInfo.schedule?.startTime).format(
+                      "HH:mm [Ngày] DD [Tháng] MM [Năm] YYYY",
+                    )}
                   </p>
                 </div>
                 <div className="flex items-center">
+                  <p className="w-42">Điểm đón</p>
+                  <p className="text-gray-800">{checkoutInfo.pickupPoint}</p>
+                </div>
+                <div className="flex items-center">
+                  <p className="w-42">Điểm đến</p>
+                  <p className="text-gray-800">{checkoutInfo.dropPoint}</p>
+                </div>
+                <div className="flex items-center">
                   <p className="w-42">Ghế</p>
-                  <p className="text-gray-800">V6</p>
+                  <p className="text-gray-800">
+                    {checkoutInfo.seat.map((item) => item.seatLabel).join(", ")}
+                  </p>
                 </div>
                 <div className="my-8 border border-dashed border-gray-300/50"></div>
                 <div className="flex items-center justify-between">
                   <p>Tổng tiền vé</p>
-                  <p className="text-gray-800">300,000 đ</p>
+                  <p className="text-gray-800">
+                    {formatCurrency(checkoutInfo.totalPrice)}
+                  </p>
                 </div>
                 <div className="flex p-4 bg-red-200/30 items-center justify-between">
                   <p>Tổng tiền thanh toán</p>
                   <p className="text-red-500 font-semibold text-base">
-                    300,000 đ
+                    {formatCurrency(checkoutInfo.totalPrice)}
                   </p>
                 </div>
               </div>

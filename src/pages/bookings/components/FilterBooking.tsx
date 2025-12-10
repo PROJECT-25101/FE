@@ -13,6 +13,7 @@ type TInitialValues = {
   pickupPointId: string;
   dropPointId: string;
   date: string;
+  dateTo: string | null;
 };
 const FilterBooking = ({
   initialValues,
@@ -42,38 +43,41 @@ const FilterBooking = ({
     dropPoint: IPointSelect;
     time: string;
   }) => {
-    const selectedLocal = dayjs(values.time);
-    const todayLocal = dayjs();
-    const isToday = selectedLocal.isSame(todayLocal, "day");
     let startTimeFrom;
     let startTimeTo;
-    if (isToday) {
-      const plus2h = todayLocal.add(2, "hour");
-      startTimeFrom = plus2h.isAfter(todayLocal.endOf("day"))
-        ? todayLocal.endOf("day").toISOString()
-        : plus2h.second(0).millisecond(0).toISOString();
-
-      startTimeTo = todayLocal.endOf("day").toISOString();
+    const now = dayjs();
+    if (values.time) {
+      const selectedLocal = dayjs(values.time);
+      const isToday = selectedLocal.isSame(now, "day");
+      if (isToday) {
+        const plus2h = now.add(2, "hour");
+        startTimeFrom = plus2h.second(0).millisecond(0).toISOString();
+        startTimeTo = now.endOf("day").toISOString();
+      } else {
+        startTimeFrom = selectedLocal.startOf("day").toISOString();
+        startTimeTo = selectedLocal.endOf("day").toISOString();
+      }
     } else {
-      startTimeFrom = selectedLocal.startOf("day").toISOString();
-      startTimeTo = selectedLocal.endOf("day").toISOString();
+      startTimeFrom = now.add(2, "hour").second(0).millisecond(0).toISOString();
     }
-
-    const params = {
-      startTimeFrom,
-      startTimeTo,
+    const params: Record<string, string> = {
       pickPointId: values.pickupPoint.value || initialValues.pickupPointId,
       dropPointId: values.dropPoint.value || initialValues.dropPointId,
     };
+    if (startTimeFrom) params.startTimeFrom = startTimeFrom;
+    if (startTimeTo) params.startTimeTo = startTimeTo;
+
     window.scrollTo({
       top: 0,
       behavior: "smooth",
     });
+
     nav({
       pathname: "/bookings",
       search: `?${createSearchParams(params)}`,
     });
   };
+
   useEffect(() => {
     if (initialValues) {
       form.setFieldsValue({
@@ -88,14 +92,15 @@ const FilterBooking = ({
       initialValues={{
         pickupPoint: initialValues.pickupPointId,
         dropPoint: initialValues.dropPointId,
-        time: dayjs(initialValues.date),
+        time: initialValues.dateTo ? dayjs(initialValues.date) : null,
       }}
       onFinish={handleSubmit}
       form={form}
+      layout="vertical"
     >
-      <div className="flex gap-6">
+      <div className="flex gap-6 items-end">
         <Form.Item
-          noStyle
+          label="Điểm xuất phát"
           name={"pickupPoint"}
           rules={[formRules.required("Điểm đi", true)]}
         >
@@ -116,8 +121,8 @@ const FilterBooking = ({
           />
         </Form.Item>
         <Form.Item
-          noStyle
           name={"dropPoint"}
+          label="Điểm đến"
           rules={[formRules.required("Điểm đến", true)]}
         >
           <Select
@@ -128,14 +133,14 @@ const FilterBooking = ({
               label: item.label,
             }))}
             optionFilterProp="label"
-            placeholder="Chọn điểm đi"
+            placeholder="Chọn điểm đến"
             disabled={!pickupPoint}
           />
         </Form.Item>
         <Form.Item
-          noStyle
+          tooltip="Nếu không chọn ngày hệ thống sẽ tự lấy khoảng thời gian hiện tại trở đi"
+          label="Ngày xuất phát"
           name={"time"}
-          rules={[formRules.required("Ngày di chuyển", true)]}
         >
           <DatePicker
             style={{ height: 40, width: 150 }}
@@ -147,7 +152,7 @@ const FilterBooking = ({
           />
         </Form.Item>
 
-        <Form.Item noStyle>
+        <Form.Item>
           <Button
             htmlType="submit"
             style={{

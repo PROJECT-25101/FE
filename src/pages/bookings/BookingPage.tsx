@@ -27,8 +27,12 @@ const BookingPage = () => {
     queryKey: [QUERY_KEY.SCHEDULE.ROOT, "CLIENT", ...Object.values(query)],
     queryFn: () => {
       const routeIds = routeData?.data.map((item) => item._id);
-      console.log(routeIds);
-      return getAllSchedules({ ...otherQuery, routeId: routeIds });
+      return getAllSchedules({
+        ...otherQuery,
+        routeId: routeIds,
+        sort: "startTime",
+        order: "asc",
+      });
     },
     enabled: !!routeData?.data?.length,
   });

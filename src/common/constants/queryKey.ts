@@ -18,4 +18,7 @@ export const QUERY_KEY = {
   SCHEDULE: {
     ROOT: "SCHEDULE",
   },
+  ORDER: {
+    ROOT: "ORDER",
+  },
 };

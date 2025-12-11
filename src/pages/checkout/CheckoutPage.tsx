@@ -9,21 +9,67 @@ import CountTime from "./components/CountTime";
 import { useCheckoutSelector } from "../../common/store/useCheckoutStore";
 import dayjs from "dayjs";
 import { formatCurrency } from "../../common/utils";
+import { createOrderPayos } from "../../common/services/order.service";
+import { useAuthSelector } from "../../common/store";
+import { useToast } from "../../common/hooks/useToast";
 
 const CheckoutPage = () => {
-  useUnHoldOnBack();
+  useUnHoldOnBack(true, false);
   const queryClient = useQueryClient();
   const nav = useNavigate();
+  const { handleAxiosError } = useToast();
   const { mutate } = useMutation({
     mutationFn: unHoldSeat,
     onSuccess: () => {
       queryClient.invalidateQueries({
-        predicate: ({ queryKey }) => queryKey.includes(QUERY_KEY.SEAT),
+        predicate: ({ queryKey }) => queryKey.includes(QUERY_KEY.SEAT.ROOT),
       });
     },
   });
+  const payosMutation = useMutation({
+    mutationFn: (payload: any) => createOrderPayos(payload),
+    onSuccess: ({ data }) => {
+      queryClient.invalidateQueries({
+        predicate: ({ queryKey }) => queryKey.includes(QUERY_KEY.ORDER.ROOT),
+      });
+      window.location.href = data.checkoutUrl as string;
+      console.log(data);
+    },
+    onError: (err) => handleAxiosError(err),
+  });
   const checkoutInfo = useCheckoutSelector((state) => state);
-
+  const userId = useAuthSelector((state) => state.user?._id);
+  const handleCheckout = () => {
+    const payload = {
+      userId,
+      routeId: checkoutInfo.route?._id,
+      carId: checkoutInfo.car?._id,
+      scheduleId: checkoutInfo.schedule?._id,
+      seats: checkoutInfo.seat.map((item) => ({
+        seatId: item._id,
+        seatLabel: item.seatLabel,
+        seatOrder: item.seatOrder,
+      })),
+      customerInfo: {
+        email: checkoutInfo.user?.email,
+        userName: checkoutInfo.user?.userName,
+        phone: checkoutInfo.user?.phone,
+      },
+      carInfo: {
+        licensePlate: checkoutInfo.car?.licensePlate,
+        type: checkoutInfo.car?.type,
+        brand: checkoutInfo.car?.model.brand,
+        model: checkoutInfo.car?.model.model,
+      },
+      pickupPoint: checkoutInfo.pickupPoint,
+      startTime: checkoutInfo.schedule?.startTime,
+      dropPoint: checkoutInfo.dropPoint,
+      arrivalTime: checkoutInfo.schedule?.arrivalTime,
+      totalPrice: checkoutInfo.totalPrice,
+      note: "",
+    };
+    payosMutation.mutate(payload);
+  };
   return (
     <section className="bg-[#f0f2f5] min-h-screen">
       <div className="max-w-7xl xl:mx-auto mx-6 pt-8">
@@ -137,7 +183,12 @@ const CheckoutPage = () => {
                 >
                   Huỷ
                 </Button>
-                <Button type="primary" style={{ background: `#0C7D41` }}>
+                <Button
+                  loading={payosMutation.isPending}
+                  onClick={handleCheckout}
+                  type="primary"
+                  style={{ background: `#0C7D41` }}
+                >
                   Thanh toán
                 </Button>
               </div>

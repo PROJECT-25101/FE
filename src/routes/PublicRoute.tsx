@@ -9,6 +9,8 @@ import LoginGooglePage from "../pages/auth/login/LoginGooglePage";
 import BookingPage from "../pages/bookings/BookingPage";
 import VerifyUser from "../pages/auth/VerifyUser";
 import CheckoutPage from "../pages/checkout/CheckoutPage";
+import ProfilePage from "../pages/profile/ProfilePage";
+import ProfileIndex from "../pages/profile/ProfileIndex";
 
 export const PublicRoute: RouteObject[] = [
   {
@@ -26,6 +28,16 @@ export const PublicRoute: RouteObject[] = [
       {
         path: "/checkout/:id",
         element: <CheckoutPage />,
+      },
+      {
+        path: "/profile",
+        element: <ProfilePage />,
+        children: [
+          {
+            index: true,
+            element: <ProfileIndex />,
+          },
+        ],
       },
     ],
   },
@@ -47,6 +59,7 @@ export const PublicRoute: RouteObject[] = [
       },
     ],
   },
+
   {
     path: "/login-google/:tk",
     element: <LoginGooglePage />,

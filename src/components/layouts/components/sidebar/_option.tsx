@@ -1,4 +1,5 @@
 import {
+  BookOutlined,
   CalendarOutlined,
   CarOutlined,
   ClusterOutlined,
@@ -44,5 +45,13 @@ export const menuGroups: IMenuItem[] = [
     icon: <CalendarOutlined />,
     label: "Quản lý lịch chạy",
     route: "/admin/schedule",
+  },
+  {
+    icon: <BookOutlined />,
+    label: "Quản lý vé",
+    children: [
+      { label: "Xác minh vé", route: "/admin/ticket/scan" },
+      { label: "Tất cả vé", route: "/admin/ticket" },
+    ],
   },
 ];

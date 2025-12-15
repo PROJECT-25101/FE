@@ -11,6 +11,8 @@ import UpdateRoute from "../pages/admin/route/update/UpdateRoute";
 import ListSchedule from "../pages/admin/schedule/ListSchedule";
 import DetailSchedule from "../pages/admin/schedule/detail/DetailSchedule";
 import AdminProtected from "../components/protected/AdminProtected";
+import ListTicket from "../pages/admin/ticket/ListTicket";
+import ScanTicket from "../pages/admin/ticket/scan/ScanTicket";
 
 export const AdminRoute: RouteObject[] = [
   {
@@ -74,6 +76,19 @@ export const AdminRoute: RouteObject[] = [
           {
             path: "show/:carId/:routeId",
             element: <DetailSchedule />,
+          },
+        ],
+      },
+      {
+        path: "ticket",
+        children: [
+          {
+            index: true,
+            element: <ListTicket />,
+          },
+          {
+            path: "scan",
+            element: <ScanTicket />,
           },
         ],
       },

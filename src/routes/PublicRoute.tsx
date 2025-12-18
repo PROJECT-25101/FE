@@ -11,6 +11,7 @@ import VerifyUser from "../pages/auth/VerifyUser";
 import CheckoutPage from "../pages/checkout/CheckoutPage";
 import ProfilePage from "../pages/profile/ProfilePage";
 import ProfileIndex from "../pages/profile/ProfileIndex";
+import ListMyTicket from "../pages/profile/ListMyTicket";
 
 export const PublicRoute: RouteObject[] = [
   {
@@ -38,6 +39,10 @@ export const PublicRoute: RouteObject[] = [
             element: <ProfileIndex />,
           },
         ],
+      },
+      {
+        path: "/profile/my-ticket",
+        element: <ListMyTicket />,
       },
     ],
   },

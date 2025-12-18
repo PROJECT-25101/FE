@@ -12,6 +12,7 @@ import CheckoutPage from "../pages/checkout/CheckoutPage";
 import ProfilePage from "../pages/profile/ProfilePage";
 import ProfileIndex from "../pages/profile/ProfileIndex";
 import ListMyTicket from "../pages/profile/ListMyTicket";
+import DetailTicket from "../pages/profile/DetailTicket";
 
 export const PublicRoute: RouteObject[] = [
   {
@@ -43,6 +44,10 @@ export const PublicRoute: RouteObject[] = [
       {
         path: "/profile/my-ticket",
         element: <ListMyTicket />,
+      },
+      {
+        path: "/profile/my-ticket/:id",
+        element: <DetailTicket />,
       },
     ],
   },

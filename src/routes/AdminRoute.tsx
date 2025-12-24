@@ -13,6 +13,7 @@ import DetailSchedule from "../pages/admin/schedule/detail/DetailSchedule";
 import AdminProtected from "../components/protected/AdminProtected";
 import ListTicket from "../pages/admin/ticket/ListTicket";
 import ScanTicket from "../pages/admin/ticket/scan/ScanTicket";
+import DetailAdminTicket from "../pages/admin/ticket/detail/DetailAdminTicket";
 
 export const AdminRoute: RouteObject[] = [
   {
@@ -85,6 +86,10 @@ export const AdminRoute: RouteObject[] = [
           {
             index: true,
             element: <ListTicket />,
+          },
+          {
+            path: "detail/:id",
+            element: <DetailAdminTicket />,
           },
           {
             path: "scan",

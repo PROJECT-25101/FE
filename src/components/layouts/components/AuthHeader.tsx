@@ -54,7 +54,7 @@ const AuthHeader = () => {
       key: "1",
     },
     {
-      label: <Link to={"/profile/orders"}>Lịch sử đặt vé</Link>,
+      label: <Link to={"/profile/my-ticket"}>Lịch sử đặt vé</Link>,
       icon: <FileSearchOutlined />,
       key: "2",
     },

@@ -9,6 +9,8 @@ import {
   TimePicker,
 } from "antd";
 import React, {
+  useEffect,
+  useMemo,
   useState,
   type MouseEventHandler,
   type ReactElement,
@@ -57,7 +59,6 @@ const ModalCreateSchedule = ({ children }: { children: ReactElement }) => {
       });
       setOpen(false);
     },
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onError: (err: any) => {
       if (err.response.data.data.failedSchedules.length > 0) {
         const { instance, closeModal } = handleOpenModalError(err, null, {
@@ -84,6 +85,7 @@ const ModalCreateSchedule = ({ children }: { children: ReactElement }) => {
   const cars = carData?.data || [];
   const routes = routeData?.data || [];
   const startDate = Form.useWatch("startTime", form);
+  const endDate = Form.useWatch("untilTime", form);
   const driver = Form.useWatch(["crew", 0, "userId"], form);
   const assistant = Form.useWatch(["crew", 1, "userId"], form);
   const handleSubmit = async () => {
@@ -104,6 +106,41 @@ const ModalCreateSchedule = ({ children }: { children: ReactElement }) => {
       mutate({ ...res, crew, startTime, untilTime, fixedHour });
     });
   };
+
+  const getValidDaysOfWeek = (
+    start?: dayjs.Dayjs,
+    end?: dayjs.Dayjs,
+  ): number[] => {
+    if (!start || !end) return [];
+    const startDay = start.day();
+    const diffDays = end.startOf("day").diff(start.startOf("day"), "day");
+    if (diffDays < 0) return [];
+    if (diffDays >= 6) {
+      return [0, 1, 2, 3, 4, 5, 6];
+    }
+
+    const days = new Set<number>();
+    for (let i = 0; i <= diffDays; i++) {
+      days.add((startDay + i) % 7);
+    }
+
+    return Array.from(days);
+  };
+
+  const validDays = useMemo(
+    () => getValidDaysOfWeek(startDate, endDate),
+    [startDate, endDate],
+  );
+  useEffect(() => {
+    const selectedDays: number[] = form.getFieldValue("dayOfWeek") || [];
+
+    const filtered = selectedDays.filter((d) => validDays.includes(d));
+
+    if (filtered.length !== selectedDays.length) {
+      form.setFieldValue("dayOfWeek", filtered);
+    }
+  }, [validDays]);
+
   return (
     <>
       {children &&
@@ -286,7 +323,7 @@ const ModalCreateSchedule = ({ children }: { children: ReactElement }) => {
             <Form.Item
               required
               label="Chọn ngày trong tuần"
-              name={"dayOfWeek"}
+              name="dayOfWeek"
               className="flex-1"
               rules={[formRules.required("Ngày trong tuần", true)]}
             >
@@ -294,12 +331,13 @@ const ModalCreateSchedule = ({ children }: { children: ReactElement }) => {
                 mode="multiple"
                 style={{ width: "100%", height: 40 }}
                 placeholder="Chọn ngày chạy trong tuần"
-                options={DAYOFWEEK_OPTIONS}
+                disabled={!startDate || !endDate}
+                options={DAYOFWEEK_OPTIONS.map((opt) => ({
+                  ...opt,
+                  disabled: !validDays.includes(opt.value),
+                }))}
                 maxTagCount="responsive"
                 allowClear
-                maxTagPlaceholder={(omittedValues) =>
-                  `+${omittedValues.length} ...`
-                }
               />
             </Form.Item>
           </div>

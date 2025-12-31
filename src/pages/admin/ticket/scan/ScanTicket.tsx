@@ -1,14 +1,75 @@
 import { Link } from "react-router";
 import { Scanner } from "@yudiel/react-qr-scanner";
 import { useRef, useState } from "react";
-import { verifyOrder } from "../../../../common/services/order.service";
+import {
+  confirmOrder,
+  verifyOrder,
+} from "../../../../common/services/order.service";
 import type { IOrder } from "../../../../common/types/Order";
-import { Button, QRCode } from "antd";
+import { Button, Popconfirm, QRCode, Watermark } from "antd";
 import { useToast } from "../../../../common/hooks/useToast";
 import dayjs from "dayjs";
+import { PrinterOutlined } from "@ant-design/icons";
+import { forwardRef } from "react";
+import { useReactToPrint } from "react-to-print";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { QUERY_KEY } from "../../../../common/constants/queryKey";
+
+const TicketPrint = forwardRef<HTMLDivElement, { order: IOrder }>(
+  ({ order }, ref) => {
+    return (
+      <div ref={ref} className="print-wrapper">
+        <Watermark
+          content={"GOTICKET"}
+          font={{
+            color: `rgba(12, 125, 65, 0.15)`,
+          }}
+        >
+          {order.seats.map((seat: any, index: number) => (
+            <div className="ticket" key={index}>
+              <div className="ticket-header flex flex-col items-center">
+                <p className="subtitle font-semibold">VÉ LÊN XE</p>
+              </div>
+              <p className="">
+                <span>Ghế: </span>
+                <strong>{seat.seatLabel}</strong>
+              </p>
+              <p className="">
+                <span>Ngày: </span>
+                <strong>{dayjs(order.startTime).format("DD/MM/YYYY")}</strong>
+              </p>
+              <p>
+                <span>Giờ: </span>
+                <strong>{dayjs(order.startTime).format("HH:mm")}</strong>
+              </p>
+              <p>
+                <span>Xe: </span>
+                <strong>{order.carInfo.licensePlate}</strong>
+              </p>
+              =========================
+              <div className="route">
+                <p className="flex flex-col text-sx">
+                  <span>Điểm đi:</span> <strong>{order.pickupPoint}</strong>
+                </p>
+                <p className="flex flex-col">
+                  <span>Điểm đến:</span> <strong>{order.dropPoint}</strong>
+                </p>
+              </div>
+              <QRCode value={order._id} size={100} />
+              <div className="footer">
+                <p>Vui lòng lên xe trước 15 phút chạy</p>
+              </div>
+            </div>
+          ))}
+        </Watermark>
+      </div>
+    );
+  },
+);
 
 const ScanTicket = () => {
-  const { message } = useToast();
+  const { message, handleAxiosError } = useToast();
+  const queryClient = useQueryClient();
   const [status, setStatus] = useState<
     "idle" | "scanning" | "success" | "error"
   >("idle");
@@ -17,6 +78,7 @@ const ScanTicket = () => {
   const lastResultRef = useRef<string | null>(null);
   const scanningRef = useRef(false);
   const timeoutRef = useRef<number | null>(null);
+  const printRef = useRef<HTMLDivElement>(null);
   const highlightCodeOnCanvas = (detectedCodes: any, ctx: any) => {
     detectedCodes.forEach((detectedCode: any) => {
       const { boundingBox } = detectedCode;
@@ -29,6 +91,25 @@ const ScanTicket = () => {
         boundingBox.height,
       );
     });
+  };
+  const fetchOrder = async (id: string, slient = false) => {
+    try {
+      const { data, message: messageServer } = await verifyOrder(id);
+      console.log(data);
+      setData(data);
+      stopCamera();
+      setStatus("success");
+      setMessageServer(messageServer);
+    } catch (err: any) {
+      const response = err.response.data;
+      if (!slient) {
+        message.error(response.message);
+      }
+      setData(response.data);
+      setMessageServer(response.message);
+      setStatus("error");
+      stopCamera();
+    }
   };
   const stopCamera = () => {
     const video = document.querySelector("video");
@@ -43,25 +124,10 @@ const ScanTicket = () => {
 
     if (scanningRef.current) return;
     if (lastResultRef.current === text) return;
-
+    await fetchOrder(text);
     scanningRef.current = true;
     lastResultRef.current = text;
     setStatus("scanning");
-    try {
-      const { data, message: messageServer } = await verifyOrder(text);
-      console.log(data);
-      setData(data);
-      stopCamera();
-      setStatus("success");
-      setMessageServer(messageServer);
-    } catch (err: any) {
-      const response = err.response.data;
-      message.error(response.message);
-      setData(response.data);
-      setMessageServer(response.message);
-      setStatus("error");
-      stopCamera();
-    }
 
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
 
@@ -70,7 +136,23 @@ const ScanTicket = () => {
       lastResultRef.current = null;
     }, 1000);
   };
-  console.log(messageServer);
+
+  const handlePrint = useReactToPrint({
+    contentRef: printRef,
+  });
+
+  const { mutate } = useMutation({
+    mutationFn: (orderId: string) => confirmOrder(orderId),
+    onSuccess: ({ data, message: serverMsg }) => {
+      message.success(serverMsg);
+      queryClient.invalidateQueries({
+        predicate: ({ queryKey }) => queryKey.includes(QUERY_KEY.ORDER.ROOT),
+      });
+      fetchOrder(data._id, true);
+    },
+    onError: (err) => handleAxiosError(err),
+  });
+
   return (
     <div className="bg-white w-full min-h-[70dvh] rounded-md shadow-sm px-6 py-4">
       <div className="flex items-center justify-between mb-4">
@@ -241,12 +323,37 @@ const ScanTicket = () => {
                       </p>
                     </div>
                   </div>
+                  {data.status === "BUYED" && (
+                    <div className="flex items-center gap-4">
+                      <Button icon={<PrinterOutlined />} onClick={handlePrint}>
+                        In vé
+                      </Button>
+                      <Popconfirm
+                        title="Hãy chắc chắn rằng bạn đã in vé lên xe cho khách hàng"
+                        okText="Chắc chắn"
+                        cancelText="Huỷ bỏ"
+                        onConfirm={() => mutate(data._id)}
+                      >
+                        <Button
+                          type="primary"
+                          style={{ background: `#0C7D41` }}
+                        >
+                          Xác nhận sử dụng vé
+                        </Button>
+                      </Popconfirm>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
           </div>
         )}
       </div>
+      {data && (
+        <div style={{ display: "none" }}>
+          <TicketPrint ref={printRef} order={data} />
+        </div>
+      )}
     </div>
   );
 };

@@ -77,3 +77,48 @@
 .custom-timepicker-popup .ant-picker-time-panel {
   width: 250px;
 }
+
+@page {
+  size: 76mm 105mm;
+  margin: 0;
+}
+
+@media print {
+  body {
+    margin: 0;
+  }
+
+  .print-wrapper {
+    width: 76mm;
+  }
+
+  .ticket {
+    width: 76mm;
+    height: 105mm;
+    padding: 5mm;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+    page-break-after: always;
+  }
+
+  .ticket:last-child {
+    page-break-after: auto;
+  }
+
+  .title {
+    text-align: center;
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 8px;
+  }
+
+  .ticket p {
+    font-size: 12px;
+    margin: 4px 0;
+  }
+
+  .qr {
+    margin-top: 10px;
+    text-align: center;
+  }
+}
